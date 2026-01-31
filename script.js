@@ -1000,7 +1000,7 @@ let stats = {
   lastDayKey: null,
   distractionCount: 0,
   distractionReasons: {},
-  dailyHistory: [], // Array of { date: "YYYY-MM-DD", minutes: N } for last 7 days
+  dailyHistory: [], // Array of { date: "YYYY-MM-DD", minutes: N } - ALL historical data preserved for research
 };
 
 let activeBlockId = null;
@@ -1069,14 +1069,13 @@ function ensureDayRoll() {
       });
     }
     
-    // Keep only last 7 days
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    const cutoffKey = sevenDaysAgo.toISOString().slice(0, 10);
-    stats.dailyHistory = stats.dailyHistory.filter(d => d.date > cutoffKey);
+    // IMPORTANT: Keep ALL historical data for research purposes
+    // We do NOT filter out old data here - all data is preserved in Firebase
+    // Only filter for UI display purposes (see getLast7DaysHistory())
     
-    // Calculate weekMinutes from dailyHistory (last 7 days, not including today)
-    stats.weekMinutes = stats.dailyHistory.reduce((sum, d) => sum + (d.minutes || 0), 0);
+    // Calculate weekMinutes from last 7 days only (for UI display)
+    // But preserve all data in stats.dailyHistory for Firebase sync
+    stats.weekMinutes = getLast7DaysHistory().reduce((sum, d) => sum + (d.minutes || 0), 0);
     
     // Streak logic: if yesterday had >0 minutes, streak continues, else reset
     if (stats.lastDayKey) {
@@ -1096,10 +1095,21 @@ function ensureDayRoll() {
   }
 }
 
-// Calculate week minutes including today
+// Get only last 7 days of history for UI display (preserves all data in DB)
+function getLast7DaysHistory() {
+  if (!Array.isArray(stats.dailyHistory)) {
+    return [];
+  }
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const cutoffKey = sevenDaysAgo.toISOString().slice(0, 10);
+  // Filter only for display - original data remains intact
+  return stats.dailyHistory.filter(d => d.date > cutoffKey);
+}
+
+// Calculate week minutes including today (for UI display - shows last 7 days)
 function getWeekMinutesWithToday() {
-  const historyMinutes = stats.dailyHistory ? 
-    stats.dailyHistory.reduce((sum, d) => sum + (d.minutes || 0), 0) : 0;
+  const historyMinutes = getLast7DaysHistory().reduce((sum, d) => sum + (d.minutes || 0), 0);
   return historyMinutes + (stats.todayMinutes || 0);
 }
 
@@ -1184,6 +1194,8 @@ function persistAll() {
 ========================= */
 
 // Sync all user data to Firestore
+// IMPORTANT: All historical data is preserved in Firebase for research purposes
+// UI only displays last 7 days, but database contains complete history
 async function syncToFirestore() {
   if (!firestore || !firebaseAuth?.currentUser) return;
   
@@ -1198,10 +1210,12 @@ async function syncToFirestore() {
     const existingData = userDoc.exists ? userDoc.data() : {};
     const existingResearchSessions = existingData.research_sessions || [];
     
+    // Merge with existing data to preserve all historical records
+    // stats.dailyHistory contains ALL historical data (not just 7 days)
     await userRef.set({
       blocks: blocks,
       tasks: tasks,
-      stats: stats,
+      stats: stats, // Contains complete dailyHistory array with all historical data
       journal: journal,
       badges: earnedBadges,
       research_sessions: existingResearchSessions, // Preserve existing research sessions
@@ -1210,13 +1224,15 @@ async function syncToFirestore() {
       updatedAt: new Date().toISOString()
     }, { merge: true });
     
-    console.log('✅ Data synced to Firestore');
+    console.log('✅ Data synced to Firestore (all historical data preserved)');
   } catch (error) {
     console.error('❌ Firestore sync error:', error);
   }
 }
 
 // Load user data from Firestore
+// IMPORTANT: This loads ALL historical data from Firebase (complete dailyHistory array)
+// UI will filter to show only last 7 days, but all data is preserved locally and in Firebase
 async function loadFromFirestore() {
   if (!firestore || !firebaseAuth?.currentUser) return false;
   
@@ -1234,9 +1250,17 @@ async function loadFromFirestore() {
     const data = userDoc.data();
     
     // Merge Firestore data with localStorage (Firestore takes priority)
+    // Firestore contains complete historical data including full dailyHistory array
     if (data.blocks) blocks = data.blocks;
     if (data.tasks) tasks = data.tasks;
-    if (data.stats) stats = Object.assign(stats, data.stats);
+    if (data.stats) {
+      // Preserve all historical data from Firestore (including complete dailyHistory)
+      stats = Object.assign(stats, data.stats);
+      // Ensure dailyHistory is an array (for backward compatibility)
+      if (!Array.isArray(stats.dailyHistory)) {
+        stats.dailyHistory = [];
+      }
+    }
     if (data.journal) journal = Object.assign(journal, data.journal);
     if (data.badges) earnedBadges = Object.assign(earnedBadges, data.badges);
     if (data.goal) {
@@ -1244,7 +1268,7 @@ async function loadFromFirestore() {
       goalTarget.textContent = String(data.goal);
     }
     
-    // Save to localStorage for offline access
+    // Save to localStorage for offline access (preserves all historical data)
     saveJSON(LS.BLOCKS, blocks);
     saveJSON(LS.TASKS, tasks);
     saveJSON(LS.STATS, stats);
@@ -1254,7 +1278,7 @@ async function loadFromFirestore() {
     // Update badge count UI
     updateBadgeCount();
     
-    console.log('✅ Data loaded from Firestore');
+    console.log('✅ Data loaded from Firestore (all historical data preserved)');
     return true;
   } catch (error) {
     console.error('❌ Firestore load error:', error);
@@ -2963,11 +2987,11 @@ function checkBadges(sessionInfo = {}) {
   // Count completed sessions
   const completedSessions = blocks.filter(b => b.completed).length;
   
-  // Calculate total minutes (from daily history + today)
+  // Calculate total minutes (from ALL daily history + today) - for badge calculations use all data
   let totalMinutes = stats.todayMinutes || 0;
-  if (stats.dailyHistory) {
-    Object.values(stats.dailyHistory).forEach(mins => {
-      totalMinutes += mins;
+  if (Array.isArray(stats.dailyHistory)) {
+    stats.dailyHistory.forEach(entry => {
+      totalMinutes += (entry.minutes || 0);
     });
   }
   
