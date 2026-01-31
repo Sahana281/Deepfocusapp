@@ -1,0 +1,28 @@
+{
+  "name": "deepfocusapp",
+  "version": "1.0.0",
+  "description": "A research-backed focus timer app to boost student productivity",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "serve": "npx http-server -p 8000"
+  },
+  "keywords": [
+    "pomodoro",
+    "focus-timer",
+    "productivity",
+    "study-timer",
+    "time-management",
+    "student-productivity",
+    "research"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/deepfocusapp.git"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

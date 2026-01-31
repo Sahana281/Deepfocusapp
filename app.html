@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DeepFocus - Study Smarter, Not Harder</title>
+<meta name="description" content="A beautiful focus timer app to boost your productivity. Track study sessions, manage tasks, and build your focus streak.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3b82f6">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DeepFocus">
+<link href="style.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+</head>
+<body>
+
+<!-- Auth Screen (shown when not logged in) -->
+<div class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <div class="auth-logo">🎯</div>
+    <h1 class="auth-title">DeepFocus</h1>
+    <p class="auth-subtitle">Study smarter, not harder</p>
+    
+    <!-- Auth Form -->
+    <form id="authForm" class="auth-form">
+      <input type="email" id="authEmail" class="auth-input" placeholder="Email address" required>
+      <input type="password" id="authPassword" class="auth-input" placeholder="Password (min 6 chars)" required minlength="6">
+      <div class="auth-error hidden" id="authError"></div>
+      <button type="submit" class="auth-btn primary" id="loginBtn">
+        <span id="authBtnText">Sign In</span>
+      </button>
+    </form>
+    
+    <div class="auth-switch">
+      <span id="authSwitchText">Don't have an account?</span>
+      <button type="button" class="auth-link" id="authSwitchBtn">Create one</button>
+    </div>
+    
+    <button type="button" class="auth-link forgot-link" id="forgotPasswordBtn">Forgot password?</button>
+    
+    <div class="reset-success hidden" id="resetSuccess">
+      ✅ Password reset email sent! Check your inbox.
+    </div>
+    
+    <div class="auth-divider"><span>or</span></div>
+    
+    <button type="button" class="auth-btn demo" id="tryDemoBtn">
+      🎮 Try Demo
+    </button>
+    
+    <p class="auth-footer">Free forever • No credit card required</p>
+  </div>
+</div>
+
+<!-- Main App (hidden until logged in) -->
+<div class="app-container hidden" id="appContainer">
+<!-- Demo Banner -->
+<div class="demo-banner hidden" id="demoBanner">
+  🎮 <strong>Demo Mode</strong> — Exploring with sample data
+  <button class="demo-help-btn" id="demoHelpBtn">📖 Guide</button>
+  <button class="demo-clear-btn" id="clearDemoBtn">Exit Demo</button>
+</div>
+
+<!-- Demo Welcome Modal -->
+<div class="modal demo-modal hidden" id="demoWelcomeModal">
+  <button class="modal-close-btn" id="demoCloseBtn">✕</button>
+  <div class="demo-welcome-header">
+    <span class="demo-welcome-icon">🎯</span>
+    <h2>Welcome to DeepFocus!</h2>
+    <p class="demo-welcome-sub">Here's a quick guide to get you started</p>
+  </div>
+  
+  <div class="demo-steps">
+    <div class="demo-step">
+      <span class="demo-step-num">1</span>
+      <div class="demo-step-content">
+        <strong>Start the Timer</strong>
+        <p>Click the <span class="highlight">▶ Start</span> button to begin your focus session. The timer is set to 2 minutes for this demo.</p>
+      </div>
+    </div>
+    
+    <div class="demo-step">
+      <span class="demo-step-num">2</span>
+      <div class="demo-step-content">
+        <strong>Track Distractions</strong>
+        <p>Got distracted? Click <span class="highlight">😵 I got distracted</span> to log it. This adds 30 seconds as a gentle penalty.</p>
+      </div>
+    </div>
+    
+    <div class="demo-step">
+      <span class="demo-step-num">3</span>
+      <div class="demo-step-content">
+        <strong>Take Breaks</strong>
+        <p>When the timer ends, a <span class="highlight">☕ break</span> automatically starts. Breaks help you stay productive longer!</p>
+      </div>
+    </div>
+    
+    <div class="demo-step">
+      <span class="demo-step-num">4</span>
+      <div class="demo-step-content">
+        <strong>Track Your Progress</strong>
+        <p>Check the <span class="highlight">Insights</span> panel on the left to see your focus time, streak, and distractions.</p>
+      </div>
+    </div>
+    
+    <div class="demo-step">
+      <span class="demo-step-num">5</span>
+      <div class="demo-step-content">
+        <strong>Customize Settings</strong>
+        <p>Click <span class="highlight">⚙️ Settings</span> to adjust focus duration, break times, and more.</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="demo-tips">
+    <h4>💡 Pro Tips</h4>
+    <ul>
+      <li><kbd>Space</kbd> to Start/Pause the timer</li>
+      <li><kbd>S</kbd> to Skip current block</li>
+      <li><kbd>?</kbd> to see all keyboard shortcuts</li>
+    </ul>
+  </div>
+  
+  <div class="demo-modal-footer">
+    <button class="btn primary" id="demoStartBtn">Got it, let's go! 🚀</button>
+  </div>
+</div>
+<button class="ghost-btn" id="appFeedbackBtn">Help Improve This App</button>
+<div class="aurora-bg"></div>
+<div class="top-bar">
+<div class="brand">
+<span class="brand-title">DeepFocus</span>
+<span class="brand-sub">Study smarter, not harder ✨</span>
+</div>
+<div class="top-actions">
+<button class="badges-btn" id="badgesBtn" title="Your Badges">🏆<span id="badgeCount"></span></button>
+<button class="ghost-btn" id="settingsBtn" title="Timer settings">⚙️</button>
+<button class="ghost-btn" id="shortcutsBtn" title="Keyboard shortcuts">⌨️</button>
+<button class="sound-toggle" id="soundToggle" title="Toggle sound">🔔 Sound</button>
+<button class="ghost-btn" id="feedbackBtn">📝 Feedback</button>
+<button class="ghost-btn" id="resetBtn">Reset</button>
+<div class="user-menu">
+  <button class="user-btn" id="userMenuBtn">
+    <span class="user-avatar" id="userAvatar">👤</span>
+    <span class="user-name" id="userName">User</span>
+  </button>
+  <div class="user-dropdown hidden" id="userDropdown">
+    <div class="user-dropdown-header">
+      <span class="user-dropdown-email" id="userEmail">user@email.com</span>
+    </div>
+    <button class="user-dropdown-item" id="logoutBtn">🚪 Sign Out</button>
+  </div>
+</div>
+</div>
+</div>
+<div class="layout">
+<!-- LEFT: Session with Tabs -->
+<section class="panel">
+<!-- Now Section (moved to top) -->
+<h2>Now</h2>
+<div class="now-card" id="nowCard">
+  <div class="now-status" id="nowStatus">
+    <span class="now-icon" id="nowIcon">⏸️</span>
+    <span class="now-state" id="nowState">Ready</span>
+  </div>
+  <div class="now-block-name" id="nowBlockName">No active block</div>
+  <div class="now-meta">
+    <div class="now-meta-item" id="nowTime">
+      <span class="now-meta-label">Time</span>
+      <span class="now-meta-value" id="nowTimeValue">--:--</span>
+    </div>
+    <div class="now-meta-item" id="nowDistractions">
+      <span class="now-meta-label">Focus</span>
+      <span class="now-meta-value" id="nowFocusValue">100%</span>
+    </div>
+  </div>
+  <div class="now-progress">
+    <div class="now-progress-fill" id="nowProgressFill"></div>
+  </div>
+</div>
+
+<nav class="panel-tabs">
+  <button class="panel-tab active" data-tab="tasks">📋 Tasks</button>
+  <button class="panel-tab" data-tab="insights">📊 Insights</button>
+</nav>
+
+<!-- Tasks Tab Content -->
+<div class="panel-content active" id="panelTasks">
+  <div class="card">
+    <div class="row space-between">
+      <div class="muted">Daily Goal</div>
+      <div class="muted"><span id="goalProgress">0</span>/<span id="goalTarget">60</span> min</div>
+    </div>
+    <div class="progress">
+      <div class="progress-fill" id="goalFill"></div>
+    </div>
+    <div class="row gap">
+      <input class="input" id="goalInput" min="1" placeholder="Goal (min)" type="number"/>
+      <button class="btn" id="saveGoalBtn">Save</button>
+    </div>
+  </div>
+  <div class="row gap">
+    <button class="btn primary add-task-btn" id="addTaskBtn">
+      <span class="add-task-icon">✨</span>
+      <span>Add Task</span>
+    </button>
+  </div>
+  <div class="subhead">Focus Blocks</div>
+  <div class="list" id="blockList"></div>
+  <div class="empty" id="noBlocksText">✨ Add a task to start your session</div>
+</div>
+
+<!-- Insights Tab Content -->
+<div class="panel-content" id="panelInsights">
+  <div class="card">
+    <div class="ins-row"><span>📌 Today</span><span><span id="todayMinutes2">0</span> min</span></div>
+    <div class="ins-row"><span>🗓️ 7 Days</span><span><span id="weekMinutes2">0</span> min</span></div>
+    <div class="ins-row"><span>🔥 Streak</span><span><span id="streakCount2">0</span></span></div>
+    <div class="ins-row"><span>😵 Distractions</span><span><span id="distractionCount2">0</span></span></div>
+  </div>
+</div>
+</section>
+<!-- CENTER: Timer -->
+<section class="center">
+<div class="timer-card">
+  <div class="timer-header">
+    <span class="timer-label" id="currentLabel">CURRENT FOCUS</span>
+    <span class="timer-badge" id="timerBadge">🎯</span>
+  </div>
+  
+  <div class="timer-ring-container">
+    <svg class="timer-ring" viewBox="0 0 200 200">
+      <defs>
+        <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#3b82f6" />
+          <stop offset="100%" stop-color="#8b5cf6" />
+        </linearGradient>
+      </defs>
+      <circle class="timer-ring-bg" cx="100" cy="100" r="90" />
+      <circle class="timer-ring-progress" id="timerRingProgress" cx="100" cy="100" r="90" stroke="url(#timerGradient)" />
+      <g id="timerRingIndicator" opacity="0">
+        <circle cx="100" cy="10" r="8" fill="#8b5cf6" />
+        <text x="100" y="15" text-anchor="middle" font-size="12" fill="#fff">🚗</text>
+      </g>
+    </svg>
+    <div class="timer-display-wrapper">
+      <div class="timer-big" id="timerDisplay">00:00</div>
+      <div class="timer-sub" id="timerHint">Add a task to begin</div>
+    </div>
+  </div>
+  
+  <div class="timer-controls">
+    <button class="timer-btn primary" id="startBtn">
+      <span class="timer-btn-icon">▶</span>
+      <span>Start</span>
+    </button>
+    <button class="timer-btn secondary" disabled="" id="pauseBtn">
+      <span class="timer-btn-icon">⏸</span>
+      <span>Pause</span>
+    </button>
+    <button class="timer-btn secondary" disabled="" id="skipBtn">
+      <span class="timer-btn-icon">⏭</span>
+      <span>Skip</span>
+    </button>
+  </div>
+  
+  <button class="distracted-btn" disabled="" id="distractedBtn">
+    <span>😵‍💫</span>
+    <span>I got distracted</span>
+  </button>
+</div>
+
+<div class="status-card" id="statusCard">
+  <div class="status-icon" id="statusIcon">💭</div>
+  <div class="status-content">
+    <div class="status-title" id="statusTitle">Ready to focus?</div>
+    <div class="status-sub" id="statusSub">Add a task to start your session</div>
+  </div>
+</div>
+
+<div class="shortcut-hint"><kbd>Space</kbd> Start/Pause · <kbd>S</kbd> Skip · <kbd>?</kbd> All shortcuts</div>
+</section>
+<!-- RIGHT: Journal Tabs (replaces Now area) -->
+<section class="panel">
+<nav class="panel-tabs">
+  <button class="panel-tab active" data-tab="reflections">📓 Reflections</button>
+  <button class="panel-tab" data-tab="distractions">⚠️ Distractions</button>
+  <button class="panel-tab" data-tab="patterns">📊 Patterns</button>
+</nav>
+
+<div class="journal-content-header">
+<button class="btn secondary journal-clear-btn hidden" id="clearReflectionsBtn" data-tab="reflections">Clear</button>
+<button class="btn secondary journal-clear-btn hidden" id="clearDistractionsBtn" data-tab="distractions">Clear</button>
+<button class="btn secondary journal-clear-btn hidden" id="clearPatternsBtn" data-tab="patterns">Clear All</button>
+</div>
+
+<div class="journal-content" id="journalContent">
+<div class="journal-empty">No entries yet. Complete a focus session to start journaling!</div>
+</div>
+
+<!-- Hidden for compatibility - values synced via JS -->
+<div class="hidden">
+  <span id="todayMinutes">0</span>
+  <span id="weekMinutes">0</span>
+  <span id="streakCount">0</span>
+  <span id="distractionCount">0</span>
+</div>
+</section>
+</div>
+<!-- MODALS -->
+<div class="backdrop hidden" id="modalBackdrop"></div>
+<div aria-modal="true" class="modal hidden" id="taskModal" role="dialog">
+<h3 id="taskModalTitle">Add Task</h3>
+<div class="modal-body">
+<label class="label">Task name</label>
+<input class="input" id="taskNameInput" placeholder="e.g., Review assignment"/>
+<label class="label mt8">Minutes</label>
+<input class="input" id="taskMinsInput" min="1" type="number" value="15"/>
+<div class="muted tiny mt8">Tip: default is 15 min (edit anytime).</div>
+</div>
+<div class="row end gap mt12">
+<button class="btn secondary" id="taskCancelBtn">Cancel</button>
+<button class="btn primary" id="taskSaveBtn">Save</button>
+</div>
+</div>
+<div aria-modal="true" class="modal hidden" id="distractModal" role="dialog">
+<h3>What pulled you away?</h3>
+<div class="muted">Pick one (helps your insights)</div>
+<div class="modal-body">
+<div class="distract-reasons">
+<button class="choice" data-reason="Phone">📱 Phone</button>
+<button class="choice" data-reason="Notifications">🔔 Notifications</button>
+<button class="choice" data-reason="Boredom">😵 Boredom</button>
+<button class="choice" data-reason="Unclear Task">❓ Unclear Task</button>
+<button class="choice" data-reason="Social Media">📲 Social Media</button>
+<button class="choice" data-reason="Hunger/Thirst">🍕 Hunger/Thirst</button>
+<button class="choice" data-reason="Noise">🔊 Noise</button>
+<button class="choice" data-reason="Other">💭 Other</button>
+</div>
+<div class="journal-note-section mt12">
+<label class="label">Quick note (optional)</label>
+<textarea class="input journal-textarea" id="distractNote" placeholder="What specifically happened? e.g., 'Friend texted me about weekend plans'"></textarea>
+</div>
+</div>
+<div class="row end gap mt12">
+<button class="btn secondary" id="distractCancelBtn">Cancel</button>
+<button class="btn primary" id="distractSubmitBtn">Submit</button>
+</div>
+</div>
+
+<!-- Post-Session Reflection Modal -->
+<div aria-modal="true" class="modal hidden" id="reflectionModal" role="dialog">
+<h3>📝 Session Reflection</h3>
+<div class="muted">Take a moment to reflect (optional but helpful!)</div>
+<div class="modal-body">
+<div class="reflection-section">
+<label class="label">How productive did you feel?</label>
+<div class="productivity-rating" id="productivityRating">
+<button class="rating-btn" data-rating="1">😫</button>
+<button class="rating-btn" data-rating="2">😕</button>
+<button class="rating-btn" data-rating="3">😐</button>
+<button class="rating-btn" data-rating="4">🙂</button>
+<button class="rating-btn" data-rating="5">🤩</button>
+</div>
+</div>
+<div class="reflection-section mt12">
+<label class="label">What helped you focus?</label>
+<div class="focus-helpers">
+<button class="helper-chip" data-helper="Quiet space">🤫 Quiet space</button>
+<button class="helper-chip" data-helper="Phone away">📵 Phone away</button>
+<button class="helper-chip" data-helper="Clear goal">🎯 Clear goal</button>
+<button class="helper-chip" data-helper="Good sleep">😴 Good sleep</button>
+<button class="helper-chip" data-helper="Music">🎵 Music</button>
+<button class="helper-chip" data-helper="Coffee/Tea">☕ Coffee/Tea</button>
+</div>
+</div>
+<div class="reflection-section mt12">
+<label class="label">How well did you recover during break?</label>
+<div class="productivity-rating" id="recoveryRating">
+<button class="rating-btn" data-rating="1">😫</button>
+<button class="rating-btn" data-rating="2">😕</button>
+<button class="rating-btn" data-rating="3">😐</button>
+<button class="rating-btn" data-rating="4">🙂</button>
+<button class="rating-btn" data-rating="5">🤩</button>
+</div>
+<div class="muted tiny mt4">Rate how refreshed you feel after the break</div>
+</div>
+<div class="reflection-section mt12">
+<label class="label">Any thoughts or learnings?</label>
+<textarea class="input journal-textarea" id="reflectionNote" placeholder="e.g., 'Morning sessions work better for me' or 'Need to turn off email notifications'"></textarea>
+</div>
+</div>
+<div class="row end gap mt12">
+<button class="btn secondary" id="skipReflectionBtn">Skip</button>
+<button class="btn primary" id="saveReflectionBtn">Save Reflection</button>
+</div>
+</div>
+
+<!-- Journal History Modal -->
+<div aria-modal="true" class="modal journal-modal hidden" id="journalModal" role="dialog">
+<div class="journal-modal-header">
+<h3>📓 Focus Journal</h3>
+<div class="journal-header-actions">
+<button class="btn secondary journal-clear-btn hidden" id="clearReflectionsBtn" data-tab="reflections">Clear Reflections</button>
+<button class="btn secondary journal-clear-btn hidden" id="clearDistractionsBtn" data-tab="distractions">Clear Distractions</button>
+<button class="btn secondary journal-clear-btn hidden" id="clearPatternsBtn" data-tab="patterns">Clear All Data</button>
+<button class="btn secondary" id="closeJournalBtn">Close</button>
+</div>
+</div>
+<div class="muted">Your reflections and distraction patterns</div>
+<div class="modal-body">
+<div class="journal-tabs">
+<button class="journal-tab active" data-tab="reflections">Reflections</button>
+<button class="journal-tab" data-tab="distractions">Distractions</button>
+<button class="journal-tab" data-tab="patterns">Patterns</button>
+</div>
+<div class="journal-content" id="journalContent">
+<div class="journal-empty">No entries yet. Complete a focus session to start journaling!</div>
+</div>
+</div>
+</div>
+
+<!-- Badges Modal -->
+<div aria-modal="true" class="modal badges-modal hidden" id="badgesModal" role="dialog">
+<h3>🏆 Your Badges</h3>
+<div class="muted">Achievements unlock as you focus</div>
+<div class="modal-body">
+<div class="badges-grid" id="badgesGrid">
+</div>
+</div>
+<div class="row end gap mt12">
+<button class="btn secondary" id="closeBadgesBtn">Close</button>
+</div>
+</div>
+
+<!-- Badge Unlocked Toast -->
+<div class="badge-toast hidden" id="badgeToast">
+<div class="badge-toast-icon" id="badgeToastIcon">🏆</div>
+<div class="badge-toast-content">
+<div class="badge-toast-title">Badge Unlocked!</div>
+<div class="badge-toast-name" id="badgeToastName"></div>
+</div>
+</div>
+<div aria-modal="true" class="modal hidden" id="feedbackModal" role="dialog">
+<h3>Today’s feedback</h3>
+<div class="muted" id="feedbackText">No sessions yet.</div>
+<div class="row end gap mt12">
+<button class="btn primary" id="feedbackCloseBtn">Close</button>
+</div>
+</div>
+<!-- Shortcuts Modal -->
+<div aria-modal="true" class="modal hidden" id="shortcutsModal" role="dialog">
+  <h3>⌨️ Keyboard Shortcuts</h3>
+  <div class="shortcuts-list">
+    <div class="shortcut-row"><kbd>Space</kbd><span>Start / Pause timer</span></div>
+    <div class="shortcut-row"><kbd>S</kbd><span>Skip current block</span></div>
+    <div class="shortcut-row"><kbd>N</kbd><span>New task</span></div>
+    <div class="shortcut-row"><kbd>Esc</kbd><span>Close modals</span></div>
+    <div class="shortcut-row"><kbd>?</kbd><span>Show this help</span></div>
+  </div>
+  <div class="muted tiny mt12" style="text-align:center;">Press any shortcut key to get started</div>
+  <div class="row end gap mt12">
+    <button class="btn primary" id="shortcutsCloseBtn">Got it!</button>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div aria-modal="true" class="modal hidden" id="settingsModal" role="dialog">
+  <h3>⚙️ Timer Settings</h3>
+  <div class="settings-form">
+    <div class="setting-row">
+      <label for="settingSessionsShort">Sessions before short break</label>
+      <div class="setting-input">
+        <input type="number" id="settingSessionsShort" min="1" max="10" value="1">
+        <span></span>
+      </div>
+    </div>
+    <div class="setting-row">
+      <label for="settingShortBreak">Short Break</label>
+      <div class="setting-input">
+        <input type="number" id="settingShortBreak" min="1" max="30" value="5">
+        <span>min</span>
+      </div>
+    </div>
+    <div class="setting-row">
+      <label for="settingLongBreak">Long Break</label>
+      <div class="setting-input">
+        <input type="number" id="settingLongBreak" min="1" max="60" value="15">
+        <span>min</span>
+      </div>
+    </div>
+    <div class="setting-row">
+      <label for="settingSessions">Sessions before long break</label>
+      <div class="setting-input">
+        <input type="number" id="settingSessions" min="1" max="10" value="4">
+        <span></span>
+      </div>
+    </div>
+    <div class="setting-row">
+      <label for="settingAutoBreak">Auto-start breaks</label>
+      <div class="setting-toggle">
+        <input type="checkbox" id="settingAutoBreak" checked>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer mt">
+    <button class="btn secondary" id="settingsCancelBtn">Cancel</button>
+    <button class="btn primary" id="settingsSaveBtn">Save</button>
+  </div>
+</div>
+
+<!-- Completion Banner -->
+<div class="completion-banner" id="completionBanner">
+  <div class="emoji">🎉</div>
+  <div class="title">Block Complete!</div>
+  <div class="subtitle" id="completionSubtitle">Great focus session!</div>
+</div>
+
+<!-- Confetti Container -->
+<div class="confetti-container" id="confettiContainer"></div>
+
+<!-- App Feedback Modal with Netlify Forms -->
+<div aria-hidden="true" class="modal-backdrop hidden" id="appFeedbackModal">
+<div aria-labelledby="appFeedbackTitle" aria-modal="true" class="modal-card" role="dialog">
+<form name="focus-app-feedback" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="feedbackForm" action="/">
+  <input type="hidden" name="form-name" value="focus-app-feedback">
+  <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
+  
+  <div class="modal-head">
+    <div>
+      <div class="modal-title" id="appFeedbackTitle">Quick App Feedback</div>
+      <div class="modal-subtitle">This helps improve DeepFocus ✨</div>
+    </div>
+    <button type="button" aria-label="Close" class="icon-btn" id="closeAppFeedback">✕</button>
+  </div>
+  
+  <div class="modal-body">
+    <label class="field-label">How was your experience?</label>
+    <div class="emoji-rating-row">
+      <input type="radio" name="rating" value="1" id="rating1" class="sr-only" required>
+      <label for="rating1" class="emoji-rating" title="Terrible">😫</label>
+      <input type="radio" name="rating" value="2" id="rating2" class="sr-only">
+      <label for="rating2" class="emoji-rating" title="Bad">😕</label>
+      <input type="radio" name="rating" value="3" id="rating3" class="sr-only">
+      <label for="rating3" class="emoji-rating" title="Okay">😐</label>
+      <input type="radio" name="rating" value="4" id="rating4" class="sr-only">
+      <label for="rating4" class="emoji-rating" title="Good">🙂</label>
+      <input type="radio" name="rating" value="5" id="rating5" class="sr-only">
+      <label for="rating5" class="emoji-rating" title="Amazing">🤩</label>
+    </div>
+    
+    <label class="field-label">What could be better?</label>
+    <div class="improve-grid">
+      <input type="checkbox" name="improve" value="UI" id="improveUI" class="sr-only">
+      <label for="improveUI" class="improve-chip">🎨 Design</label>
+      <input type="checkbox" name="improve" value="Speed" id="improveSpeed" class="sr-only">
+      <label for="improveSpeed" class="improve-chip">⚡ Speed</label>
+      <input type="checkbox" name="improve" value="Timer" id="improveTimer" class="sr-only">
+      <label for="improveTimer" class="improve-chip">⏱️ Timer</label>
+      <input type="checkbox" name="improve" value="Tasks" id="improveTasks" class="sr-only">
+      <label for="improveTasks" class="improve-chip">📋 Tasks</label>
+      <input type="checkbox" name="improve" value="Analytics" id="improveAnalytics" class="sr-only">
+      <label for="improveAnalytics" class="improve-chip">📊 Stats</label>
+      <input type="checkbox" name="improve" value="Other" id="improveOther" class="sr-only">
+      <label for="improveOther" class="improve-chip">💡 Other</label>
+    </div>
+    
+    <label class="field-label" for="feedbackMessage">Any other thoughts?</label>
+    <textarea class="feedback-textarea" id="feedbackMessage" name="message" placeholder="Tell us what's on your mind..." rows="3"></textarea>
+  </div>
+  
+  <div class="modal-actions">
+    <button type="button" class="secondary-btn" id="cancelAppFeedback">Cancel</button>
+    <button type="submit" class="primary-btn" id="submitAppFeedback">Submit</button>
+  </div>
+</form>
+
+<!-- Success State -->
+<div class="feedback-success hidden" id="feedbackSuccess">
+  <div class="success-emoji">🎉</div>
+  <div class="success-title">Thank you!</div>
+  <div class="success-subtitle">Your feedback helps make DeepFocus better.</div>
+  <button type="button" class="btn primary mt12" id="feedbackSuccessClose">Close</button>
+</div>
+</div>
+</div>
+</div><!-- end app-container -->
+
+<script src="script.js"></script>
+<script>
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('SW registered'))
+      .catch(err => console.log('SW registration failed:', err));
+  });
+}
+</script>
+</body>
+</html>

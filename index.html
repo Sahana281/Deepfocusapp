@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DeepFocus - Study Smarter, Not Harder</title>
+<meta name="description" content="A research-backed focus timer app to boost student productivity. Track study sessions, build focus streaks, and gain insights into your learning patterns.">
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  color: #fff;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Header */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 40px;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+nav {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cta-button {
+  padding: 12px 28px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  pointer-events: auto;
+  position: relative;
+  z-index: 10;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+/* Hero Section */
+.hero {
+  padding: 180px 20px 100px;
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.hero h1 {
+  font-size: 64px;
+  font-weight: 800;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #60a5fa, #a78bfa, #f472b6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+}
+
+.hero-subtitle {
+  font-size: 22px;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 40px;
+  font-weight: 400;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.primary-btn {
+  padding: 16px 36px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border: none;
+  border-radius: 14px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+  pointer-events: auto;
+  position: relative;
+  z-index: 10;
+}
+
+.primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(59, 130, 246, 0.5);
+}
+
+.secondary-btn {
+  padding: 16px 36px;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 14px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.secondary-btn:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.3);
+}
+
+/* Features Section */
+.features {
+  padding: 100px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 60px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-bottom: 60px;
+}
+
+.feature-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 40px;
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  background: rgba(255,255,255,0.08);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.feature-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.feature-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.feature-desc {
+  color: rgba(255,255,255,0.7);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Stats Section */
+.stats {
+  padding: 80px 20px;
+  background: rgba(0,0,0,0.2);
+  margin: 60px 0;
+}
+
+.stats-grid {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
+  text-align: center;
+}
+
+.stat-item {
+  padding: 20px;
+}
+
+.stat-number {
+  font-size: 48px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  color: rgba(255,255,255,0.7);
+  font-size: 16px;
+}
+
+/* How It Works */
+.how-it-works {
+  padding: 100px 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.step {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.step-number {
+  font-size: 48px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  min-width: 60px;
+}
+
+.step-content h3 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.step-content p {
+  color: rgba(255,255,255,0.7);
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+/* CTA Section */
+.cta-section {
+  padding: 100px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+  margin: 60px 0;
+}
+
+.cta-section h2 {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.cta-section p {
+  font-size: 20px;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 40px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Footer */
+footer {
+  padding: 60px 20px 40px;
+  text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.6);
+}
+
+footer p {
+  margin-bottom: 12px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  header {
+    padding: 15px 20px;
+  }
+  
+  .hero h1 {
+    font-size: 42px;
+  }
+  
+  .hero-subtitle {
+    font-size: 18px;
+  }
+  
+  .section-title {
+    font-size: 32px;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .step {
+    flex-direction: column;
+  }
+  
+  .cta-section h2 {
+    font-size: 36px;
+  }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="logo">
+      <span>🎯</span>
+      <span>DeepFocus</span>
+    </div>
+    <a href="app.html" class="cta-button">Try It Now</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>Study Smarter,<br/>Not Harder</h1>
+  <p class="hero-subtitle">
+    A research-backed focus timer app designed to help students build better study habits, 
+    track productivity, and unlock their full potential.
+  </p>
+  <div class="hero-buttons">
+    <a href="app.html" class="primary-btn">Start Focusing →</a>
+    <a href="#features" class="secondary-btn">Learn More</a>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="stats-grid">
+    <div class="stat-item">
+      <div class="stat-number">25+</div>
+      <div class="stat-label">Min Focus Sessions</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">12</div>
+      <div class="stat-label">Achievement Badges</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">100%</div>
+      <div class="stat-label">Privacy Focused</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">24/7</div>
+      <div class="stat-label">Available</div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <h2 class="section-title">Why Students Love DeepFocus</h2>
+  
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">⏱️</div>
+      <h3 class="feature-title">Smart Timer</h3>
+      <p class="feature-desc">
+        Customizable focus sessions with automatic break timers. 
+        Built on proven Pomodoro technique principles.
+      </p>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">📓</div>
+      <h3 class="feature-title">Focus Journal</h3>
+      <p class="feature-desc">
+        Reflect on each session, track what helps you focus, 
+        and identify patterns in your productivity.
+      </p>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">🏆</div>
+      <h3 class="feature-title">Gamification</h3>
+      <p class="feature-desc">
+        Unlock badges and achievements as you build your focus streak. 
+        Stay motivated with visual progress tracking.
+      </p>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3 class="feature-title">Insights & Analytics</h3>
+      <p class="feature-desc">
+        Track your daily progress, weekly totals, and streak. 
+        Understand your most productive times and patterns.
+      </p>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">🎯</div>
+      <h3 class="feature-title">Goal Setting</h3>
+      <p class="feature-desc">
+        Set daily focus goals and track your progress. 
+        Build consistency with visual progress indicators.
+      </p>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">🔔</div>
+      <h3 class="feature-title">Smart Notifications</h3>
+      <p class="feature-desc">
+        Get notified when sessions complete. 
+        Celebrate your wins with sound and visual feedback.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="how-it-works">
+  <h2 class="section-title">How It Works</h2>
+  
+  <div class="steps">
+    <div class="step">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <h3>Add Your Tasks</h3>
+        <p>Create focus blocks for your study sessions. Set custom durations or use defaults. Organize your day with clear goals.</p>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <h3>Start Focusing</h3>
+        <p>Click start and dive into deep work. The timer tracks your progress and keeps you accountable. Take breaks when needed.</p>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <h3>Reflect & Improve</h3>
+        <p>After each session, reflect on what worked. Journal your thoughts and track patterns. Unlock badges as you progress.</p>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="step-number">4</div>
+      <div class="step-content">
+        <h3>Build Your Streak</h3>
+        <p>Watch your focus streak grow. See your weekly progress and insights. Stay motivated with visual achievements.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <h2>Ready to Boost Your Productivity?</h2>
+  <p>
+    Join students who are already building better study habits with DeepFocus. 
+    Start your first session today - it's free and takes just seconds to get started.
+  </p>
+  <a href="app.html" class="primary-btn" style="font-size: 18px; padding: 18px 40px;">
+    Get Started Free →
+  </a>
+</section>
+
+<footer>
+  <p><strong>DeepFocus</strong> - Built for Students, Powered by Research</p>
+  <p style="font-size: 14px; margin-top: 8px;">
+    Part of an academic research project on student productivity and focus patterns.
+  </p>
+  <p style="font-size: 12px; margin-top: 16px; opacity: 0.6;">
+    © 2025 DeepFocus. All rights reserved.
+  </p>
+</footer>
+
+<script>
+// Ensure all links work correctly
+document.addEventListener('DOMContentLoaded', () => {
+  const links = document.querySelectorAll('a[href="app.html"]');
+  links.forEach(link => {
+    link.addEventListener('click', (e) => {
+      console.log('Link clicked:', link.href);
+      // Let the default link behavior happen
+    });
+  });
+});
+</script>
+
+</body>
+</html>
