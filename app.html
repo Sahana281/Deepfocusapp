@@ -4,6 +4,9 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
 <title>DeepFocus - Study Smarter, Not Harder</title>
 <meta name="description" content="A beautiful focus timer app to boost your productivity. Track study sessions, manage tasks, and build your focus streak.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
@@ -34,8 +37,8 @@
     
     <!-- Auth Form -->
     <form id="authForm" class="auth-form">
-      <input type="email" id="authEmail" class="auth-input" placeholder="Email address" required>
-      <input type="password" id="authPassword" class="auth-input" placeholder="Password (min 6 chars)" required minlength="6">
+      <input type="text" id="authEmail" class="auth-input" placeholder="Username" required autocomplete="username">
+      <input type="password" id="authPassword" class="auth-input" placeholder="Password (min 6 chars)" required minlength="6" autocomplete="current-password">
       <div class="auth-error hidden" id="authError"></div>
       <button type="submit" class="auth-btn primary" id="loginBtn">
         <span id="authBtnText">Sign In</span>
@@ -50,7 +53,7 @@
     <button type="button" class="auth-link forgot-link" id="forgotPasswordBtn">Forgot password?</button>
     
     <div class="reset-success hidden" id="resetSuccess">
-      ✅ Password reset email sent! Check your inbox.
+      ✅ Password reset link sent! Check your account email (username@deepfocus.app).
     </div>
     
     <div class="auth-divider"><span>or</span></div>
@@ -67,9 +70,9 @@
 <div class="app-container hidden" id="appContainer">
 <!-- Demo Banner -->
 <div class="demo-banner hidden" id="demoBanner">
-  🎮 <strong>Demo Mode</strong> — Exploring with sample data
-  <button class="demo-help-btn" id="demoHelpBtn">📖 Guide</button>
-  <button class="demo-clear-btn" id="clearDemoBtn">Exit Demo</button>
+  🎮 <strong>Demo Mode</strong> — Try it out!
+  <button class="demo-help-btn" id="demoHelpBtn">📖 Help</button>
+  <button class="demo-clear-btn" id="clearDemoBtn">Exit</button>
 </div>
 
 <!-- Demo Welcome Modal -->
@@ -77,66 +80,41 @@
   <button class="modal-close-btn" id="demoCloseBtn">✕</button>
   <div class="demo-welcome-header">
     <span class="demo-welcome-icon">🎯</span>
-    <h2>Welcome to DeepFocus!</h2>
-    <p class="demo-welcome-sub">Here's a quick guide to get you started</p>
+    <h2>Welcome!</h2>
+    <p class="demo-welcome-sub">Let's learn how to focus together</p>
   </div>
   
   <div class="demo-steps">
     <div class="demo-step">
-      <span class="demo-step-num">1</span>
+      <span class="demo-step-icon">➕</span>
       <div class="demo-step-content">
-        <strong>Start the Timer</strong>
-        <p>Click the <span class="highlight">▶ Start</span> button to begin your focus session. The timer is set to 2 minutes for this demo.</p>
+        <strong>Add a Task</strong>
+        <p>Click <span class="highlight">Add New Task</span> to add what you want to work on</p>
       </div>
     </div>
     
     <div class="demo-step">
-      <span class="demo-step-num">2</span>
+      <span class="demo-step-icon">🎯</span>
       <div class="demo-step-content">
-        <strong>Track Distractions</strong>
-        <p>Got distracted? Click <span class="highlight">😵 I got distracted</span> to log it. This adds 30 seconds as a gentle penalty.</p>
+        <strong>Start Focusing</strong>
+        <p>Click <span class="highlight">🎯 Start</span> on a task, then press <span class="highlight">▶ Start</span> to begin</p>
       </div>
     </div>
     
     <div class="demo-step">
-      <span class="demo-step-num">3</span>
+      <span class="demo-step-icon">📊</span>
       <div class="demo-step-content">
-        <strong>Take Breaks</strong>
-        <p>When the timer ends, a <span class="highlight">☕ break</span> automatically starts. Breaks help you stay productive longer!</p>
+        <strong>See Your Progress</strong>
+        <p>Check the right side to see how much you've focused today!</p>
       </div>
     </div>
-    
-    <div class="demo-step">
-      <span class="demo-step-num">4</span>
-      <div class="demo-step-content">
-        <strong>Track Your Progress</strong>
-        <p>Check the <span class="highlight">Insights</span> panel on the left to see your focus time, streak, and distractions.</p>
-      </div>
-    </div>
-    
-    <div class="demo-step">
-      <span class="demo-step-num">5</span>
-      <div class="demo-step-content">
-        <strong>Customize Settings</strong>
-        <p>Click <span class="highlight">⚙️ Settings</span> to adjust focus duration, break times, and more.</p>
-      </div>
-    </div>
-  </div>
-  
-  <div class="demo-tips">
-    <h4>💡 Pro Tips</h4>
-    <ul>
-      <li><kbd>Space</kbd> to Start/Pause the timer</li>
-      <li><kbd>S</kbd> to Skip current block</li>
-      <li><kbd>?</kbd> to see all keyboard shortcuts</li>
-    </ul>
   </div>
   
   <div class="demo-modal-footer">
-    <button class="btn primary" id="demoStartBtn">Got it, let's go! 🚀</button>
+    <button class="btn primary kid-friendly-btn" id="demoStartBtn">Let's Go! 🚀</button>
   </div>
 </div>
-<button class="ghost-btn" id="appFeedbackBtn">Help Improve This App</button>
+<button class="ghost-btn feedback-btn" id="appFeedbackBtn">💬 Help improve this site</button>
 <div class="aurora-bg"></div>
 <div class="top-bar">
 <div class="brand">
@@ -144,12 +122,10 @@
 <span class="brand-sub">Study smarter, not harder ✨</span>
 </div>
 <div class="top-actions">
+<button class="ghost-btn manual-btn" id="manualBtn" title="Need help? Check the manual!">📖 Look through the manual</button>
 <button class="badges-btn" id="badgesBtn" title="Your Badges">🏆<span id="badgeCount"></span></button>
-<button class="ghost-btn" id="settingsBtn" title="Timer settings">⚙️</button>
-<button class="ghost-btn" id="shortcutsBtn" title="Keyboard shortcuts">⌨️</button>
-<button class="sound-toggle" id="soundToggle" title="Toggle sound">🔔 Sound</button>
-<button class="ghost-btn" id="feedbackBtn">📝 Feedback</button>
-<button class="ghost-btn" id="resetBtn">Reset</button>
+<button class="ghost-btn" id="settingsBtn" title="Settings">⚙️</button>
+<button class="reset-btn" id="resetBtn" title="Clears all data and restarts the app">↺ Reset all</button>
 <div class="user-menu">
   <button class="user-btn" id="userMenuBtn">
     <span class="user-avatar" id="userAvatar">👤</span>
@@ -157,7 +133,6 @@
   </button>
   <div class="user-dropdown hidden" id="userDropdown">
     <div class="user-dropdown-header">
-      <span class="user-dropdown-email" id="userEmail">user@email.com</span>
     </div>
     <button class="user-dropdown-item" id="logoutBtn">🚪 Sign Out</button>
   </div>
@@ -165,71 +140,23 @@
 </div>
 </div>
 <div class="layout">
-<!-- LEFT: Session with Tabs -->
+<!-- LEFT: Tasks Panel -->
 <section class="panel">
-<!-- Now Section (moved to top) -->
-<h2>Now</h2>
-<div class="now-card" id="nowCard">
-  <div class="now-status" id="nowStatus">
-    <span class="now-icon" id="nowIcon">⏸️</span>
-    <span class="now-state" id="nowState">Ready</span>
-  </div>
-  <div class="now-block-name" id="nowBlockName">No active block</div>
-  <div class="now-meta">
-    <div class="now-meta-item" id="nowTime">
-      <span class="now-meta-label">Time</span>
-      <span class="now-meta-value" id="nowTimeValue">--:--</span>
-    </div>
-    <div class="now-meta-item" id="nowDistractions">
-      <span class="now-meta-label">Focus</span>
-      <span class="now-meta-value" id="nowFocusValue">100%</span>
-    </div>
-  </div>
-  <div class="now-progress">
-    <div class="now-progress-fill" id="nowProgressFill"></div>
-  </div>
-</div>
-
-<nav class="panel-tabs">
-  <button class="panel-tab active" data-tab="tasks">📋 Tasks</button>
-  <button class="panel-tab" data-tab="insights">📊 Insights</button>
-</nav>
-
-<!-- Tasks Tab Content -->
-<div class="panel-content active" id="panelTasks">
-  <div class="card">
-    <div class="row space-between">
-      <div class="muted">Daily Goal</div>
-      <div class="muted"><span id="goalProgress">0</span>/<span id="goalTarget">60</span> min</div>
-    </div>
-    <div class="progress">
-      <div class="progress-fill" id="goalFill"></div>
-    </div>
-    <div class="row gap">
-      <input class="input" id="goalInput" min="1" placeholder="Goal (min)" type="number"/>
-      <button class="btn" id="saveGoalBtn">Save</button>
-    </div>
-  </div>
-  <div class="row gap">
+  <!-- Add Task Section (Primary CTA - Top Priority) -->
+  <div class="add-task-section">
     <button class="btn primary add-task-btn" id="addTaskBtn">
-      <span class="add-task-icon">✨</span>
-      <span>Add Task</span>
+      <span class="add-task-icon">➕</span>
+      <span>Add New Task</span>
     </button>
+    <div class="add-task-helper" id="addTaskHelper">
+      Start here — add what you want to focus on
+    </div>
   </div>
+  
+  <!-- Focus Blocks List -->
   <div class="subhead">Focus Blocks</div>
   <div class="list" id="blockList"></div>
   <div class="empty" id="noBlocksText">✨ Add a task to start your session</div>
-</div>
-
-<!-- Insights Tab Content -->
-<div class="panel-content" id="panelInsights">
-  <div class="card">
-    <div class="ins-row"><span>📌 Today</span><span><span id="todayMinutes2">0</span> min</span></div>
-    <div class="ins-row"><span>🗓️ 7 Days</span><span><span id="weekMinutes2">0</span> min</span></div>
-    <div class="ins-row"><span>🔥 Streak</span><span><span id="streakCount2">0</span></span></div>
-    <div class="ins-row"><span>😵 Distractions</span><span><span id="distractionCount2">0</span></span></div>
-  </div>
-</div>
 </section>
 <!-- CENTER: Timer -->
 <section class="center">
@@ -260,6 +187,16 @@
     </div>
   </div>
   
+  <!-- Primary Action: I got distracted -->
+  <button class="distracted-btn" disabled="" id="distractedBtn">
+    <span class="distracted-icon">⚠️</span>
+    <div class="distracted-content">
+      <span class="distracted-label">I got distracted</span>
+      <span class="distracted-subtext">Tap anytime to log a distraction</span>
+    </div>
+  </button>
+  
+  <!-- Secondary Controls: Start / Pause / Skip -->
   <div class="timer-controls">
     <button class="timer-btn primary" id="startBtn">
       <span class="timer-btn-icon">▶</span>
@@ -274,11 +211,28 @@
       <span>Skip</span>
     </button>
   </div>
-  
-  <button class="distracted-btn" disabled="" id="distractedBtn">
-    <span>😵‍💫</span>
-    <span>I got distracted</span>
-  </button>
+</div>
+
+<!-- Distraction Toast Notification -->
+<div class="distraction-toast hidden" id="distractionToast">
+  <div class="distraction-toast-content">
+    <span class="distraction-toast-icon">⏱️</span>
+    <div class="distraction-toast-text">
+      <div class="distraction-toast-title">Distraction logged</div>
+      <div class="distraction-toast-message">+30 seconds added to stay accountable</div>
+    </div>
+  </div>
+</div>
+
+<!-- Generic Toast Notification (for task start, break start, etc.) -->
+<div class="distraction-toast hidden" id="genericToast">
+  <div class="distraction-toast-content">
+    <span class="distraction-toast-icon" id="genericToastIcon">🎯</span>
+    <div class="distraction-toast-text">
+      <div class="distraction-toast-title" id="genericToastTitle">Notification</div>
+      <div class="distraction-toast-message" id="genericToastMessage"></div>
+    </div>
+  </div>
 </div>
 
 <div class="status-card" id="statusCard">
@@ -289,20 +243,42 @@
   </div>
 </div>
 
-<div class="shortcut-hint"><kbd>Space</kbd> Start/Pause · <kbd>S</kbd> Skip · <kbd>?</kbd> All shortcuts</div>
 </section>
-<!-- RIGHT: Journal Tabs (replaces Now area) -->
+<!-- RIGHT: Insights & Review Panel -->
 <section class="panel">
-<nav class="panel-tabs">
-  <button class="panel-tab active" data-tab="reflections">📓 Reflections</button>
-  <button class="panel-tab" data-tab="distractions">⚠️ Distractions</button>
-  <button class="panel-tab" data-tab="patterns">📊 Patterns</button>
-</nav>
+  <!-- Daily Goal Section (Above Insights Panel) -->
+  <div class="card daily-goal-card">
+    <div class="row space-between">
+      <div class="muted daily-goal-label">Daily Goal</div>
+      <div class="muted"><span id="goalProgress">0</span>/<span id="goalTarget">60</span> min</div>
+    </div>
+    <div class="progress">
+      <div class="progress-fill" id="goalFill"></div>
+    </div>
+    <div class="row gap">
+      <input class="input" id="goalInput" min="1" placeholder="Goal (min)" type="number"/>
+      <button class="btn" id="saveGoalBtn">Save</button>
+    </div>
+    <div class="daily-goal-helper">Optional — set how long you want to focus today</div>
+  </div>
+
+<div class="insights-header">
+  <h3 class="insights-title">Review Your Insights</h3>
+  <p class="insights-subtitle">Understand your focus patterns after each session</p>
+</div>
+<div class="insights-selector">
+  <button class="insight-selector-btn active" data-tab="patterns">
+    <span class="insight-icon">📊</span>
+    <span class="insight-label">Patterns</span>
+  </button>
+  <button class="insight-selector-btn" data-tab="feedback">
+    <span class="insight-icon">📝</span>
+    <span class="insight-label">Feedback</span>
+  </button>
+</div>
 
 <div class="journal-content-header">
-<button class="btn secondary journal-clear-btn hidden" id="clearReflectionsBtn" data-tab="reflections">Clear</button>
-<button class="btn secondary journal-clear-btn hidden" id="clearDistractionsBtn" data-tab="distractions">Clear</button>
-<button class="btn secondary journal-clear-btn hidden" id="clearPatternsBtn" data-tab="patterns">Clear All</button>
+<button class="btn secondary insights-clear-btn" id="insightsClearBtn">Clear</button>
 </div>
 
 <div class="journal-content" id="journalContent">
@@ -324,10 +300,19 @@
 <h3 id="taskModalTitle">Add Task</h3>
 <div class="modal-body">
 <label class="label">Task name</label>
-<input class="input" id="taskNameInput" placeholder="e.g., Review assignment"/>
-<label class="label mt8">Minutes</label>
+<input class="input" id="taskNameInput" placeholder="e.g., Review assignment" autofocus/>
+<label class="label mt12">Minutes</label>
 <input class="input" id="taskMinsInput" min="1" type="number" value="15"/>
-<div class="muted tiny mt8">Tip: default is 15 min (edit anytime).</div>
+<label class="label mt12">Deadline (Optional)</label>
+<input class="input" id="taskDeadlineInput" type="date"/>
+<div class="muted tiny mt8">Tip: Add deadline to track urgent assignments.</div>
+<div class="muted tiny mt12">💡 Quick Templates:</div>
+<div class="template-buttons" id="templateButtons">
+  <button type="button" class="template-btn" data-template="math">Study for test (45 min)</button>
+  <button type="button" class="template-btn" data-template="reading">Reading session (30 min)</button>
+  <button type="button" class="template-btn" data-template="review">Review notes (25 min)</button>
+  <button type="button" class="template-btn" data-template="writing">Essay draft (60 min)</button>
+</div>
 </div>
 <div class="row end gap mt12">
 <button class="btn secondary" id="taskCancelBtn">Cancel</button>
@@ -336,42 +321,37 @@
 </div>
 <div aria-modal="true" class="modal hidden" id="distractModal" role="dialog">
 <h3>What pulled you away?</h3>
-<div class="muted">Pick one (helps your insights)</div>
+<div class="muted">Pick one</div>
 <div class="modal-body">
 <div class="distract-reasons">
 <button class="choice" data-reason="Phone">📱 Phone</button>
-<button class="choice" data-reason="Notifications">🔔 Notifications</button>
 <button class="choice" data-reason="Boredom">😵 Boredom</button>
-<button class="choice" data-reason="Unclear Task">❓ Unclear Task</button>
-<button class="choice" data-reason="Social Media">📲 Social Media</button>
-<button class="choice" data-reason="Hunger/Thirst">🍕 Hunger/Thirst</button>
+<button class="choice" data-reason="Hunger/Thirst">🍕 Hunger / Thirst</button>
 <button class="choice" data-reason="Noise">🔊 Noise</button>
 <button class="choice" data-reason="Other">💭 Other</button>
 </div>
-<div class="journal-note-section mt12">
-<label class="label">Quick note (optional)</label>
-<textarea class="input journal-textarea" id="distractNote" placeholder="What specifically happened? e.g., 'Friend texted me about weekend plans'"></textarea>
-</div>
-</div>
+<div class="distract-other-input hidden mt12" id="distractOtherInput">
+<input type="text" class="input" id="distractNote" placeholder="What pulled you away?" maxlength="80"/>
 <div class="row end gap mt12">
-<button class="btn secondary" id="distractCancelBtn">Cancel</button>
-<button class="btn primary" id="distractSubmitBtn">Submit</button>
+<button class="btn secondary" id="distractOtherCancelBtn">Cancel</button>
+<button class="btn primary" id="distractOtherSubmitBtn" disabled>Submit</button>
+</div>
+</div>
 </div>
 </div>
 
 <!-- Post-Session Reflection Modal -->
 <div aria-modal="true" class="modal hidden" id="reflectionModal" role="dialog">
 <h3>📝 Session Reflection</h3>
-<div class="muted">Take a moment to reflect (optional but helpful!)</div>
 <div class="modal-body">
 <div class="reflection-section">
 <label class="label">How productive did you feel?</label>
-<div class="productivity-rating" id="productivityRating">
-<button class="rating-btn" data-rating="1">😫</button>
-<button class="rating-btn" data-rating="2">😕</button>
-<button class="rating-btn" data-rating="3">😐</button>
-<button class="rating-btn" data-rating="4">🙂</button>
-<button class="rating-btn" data-rating="5">🤩</button>
+<div class="star-rating" id="productivityRating">
+<button class="star-btn" data-rating="1">☆</button>
+<button class="star-btn" data-rating="2">☆</button>
+<button class="star-btn" data-rating="3">☆</button>
+<button class="star-btn" data-rating="4">☆</button>
+<button class="star-btn" data-rating="5">☆</button>
 </div>
 </div>
 <div class="reflection-section mt12">
@@ -382,23 +362,8 @@
 <button class="helper-chip" data-helper="Clear goal">🎯 Clear goal</button>
 <button class="helper-chip" data-helper="Good sleep">😴 Good sleep</button>
 <button class="helper-chip" data-helper="Music">🎵 Music</button>
-<button class="helper-chip" data-helper="Coffee/Tea">☕ Coffee/Tea</button>
+<button class="helper-chip" data-helper="Food / Drink">🍕 Food / Drink</button>
 </div>
-</div>
-<div class="reflection-section mt12">
-<label class="label">How well did you recover during break?</label>
-<div class="productivity-rating" id="recoveryRating">
-<button class="rating-btn" data-rating="1">😫</button>
-<button class="rating-btn" data-rating="2">😕</button>
-<button class="rating-btn" data-rating="3">😐</button>
-<button class="rating-btn" data-rating="4">🙂</button>
-<button class="rating-btn" data-rating="5">🤩</button>
-</div>
-<div class="muted tiny mt4">Rate how refreshed you feel after the break</div>
-</div>
-<div class="reflection-section mt12">
-<label class="label">Any thoughts or learnings?</label>
-<textarea class="input journal-textarea" id="reflectionNote" placeholder="e.g., 'Morning sessions work better for me' or 'Need to turn off email notifications'"></textarea>
 </div>
 </div>
 <div class="row end gap mt12">
@@ -433,7 +398,10 @@
 
 <!-- Badges Modal -->
 <div aria-modal="true" class="modal badges-modal hidden" id="badgesModal" role="dialog">
-<h3>🏆 Your Badges</h3>
+<div class="journal-content-header">
+  <h3>🏆 Your Badges</h3>
+  <button class="insights-clear-btn" id="clearBadgesBtn" title="Clear earned badges">Clear</button>
+</div>
 <div class="muted">Achievements unlock as you focus</div>
 <div class="modal-body">
 <div class="badges-grid" id="badgesGrid">
@@ -442,6 +410,131 @@
 <div class="row end gap mt12">
 <button class="btn secondary" id="closeBadgesBtn">Close</button>
 </div>
+</div>
+
+<!-- User Manual Modal -->
+<div aria-modal="true" class="modal manual-modal hidden" id="manualModal" role="dialog">
+  <div class="manual-header">
+    <h3>📖 User Manual</h3>
+    <button class="modal-close-btn" id="manualCloseBtn">✕</button>
+  </div>
+  <div class="manual-body">
+    <div class="manual-intro">
+      <p>Welcome to DeepFocus! This guide will help you learn how to use the app.</p>
+      <button class="btn primary kid-friendly-btn" id="manualDemoBtn" style="margin-top: 16px; width: 100%;">
+        🎮 Try Demo Mode
+      </button>
+    </div>
+    
+    <div class="manual-section">
+      <div class="manual-section-header">
+        <span class="manual-icon">➕</span>
+        <h4>Adding Tasks</h4>
+      </div>
+      <p>Click the <strong>"Add New Task"</strong> button on the left side. Give your task a name (like "Math Homework") and set how many minutes you want to focus. You can also add a deadline if needed!</p>
+    </div>
+    
+    <div class="manual-section">
+      <div class="manual-section-header">
+        <span class="manual-icon">🎯</span>
+        <h4>Starting a Focus Session</h4>
+      </div>
+      <p>After adding a task, click the <strong>"🎯 Start"</strong> button next to it. Then click the big <strong>"▶ Start"</strong> button in the center timer to begin focusing!</p>
+    </div>
+    
+    <div class="manual-section">
+      <div class="manual-section-header">
+        <span class="manual-icon">⏸️</span>
+        <h4>Timer Controls</h4>
+      </div>
+      <ul class="manual-list">
+        <li><strong>▶ Start:</strong> Begin your focus session</li>
+        <li><strong>⏸ Pause:</strong> Pause the timer if you need a break</li>
+        <li><strong>⏭ Skip:</strong> Skip to the next task if you want to move on</li>
+      </ul>
+    </div>
+    
+    <div class="manual-section">
+      <div class="manual-section-header">
+        <span class="manual-icon">⚠️</span>
+        <h4>Tracking Distractions</h4>
+      </div>
+      <p>If you get distracted, click the <strong>"⚠️ I got distracted"</strong> button. Choose what distracted you (like Phone, Boredom, or Hunger). This helps you learn what pulls you away from focusing!</p>
+    </div>
+    
+    <div class="manual-section">
+      <div class="manual-section-header">
+        <span class="manual-icon">⭐</span>
+        <h4>Reflecting After Sessions</h4>
+      </div>
+      <p>When you finish a focus session, you'll be asked to rate how well you focused (1-5 stars) and write a note. You can also choose what helped you focus, like "Quiet Space" or "Music".</p>
+    </div>
+    
+    <div class="manual-section">
+      <div class="manual-section-header">
+        <span class="manual-icon">📊</span>
+        <h4>Insights & Patterns</h4>
+      </div>
+      <p>Check the right side panel to see your progress! The <strong>Patterns</strong> tab shows your top distractions and what helps you focus. The <strong>Feedback</strong> tab shows your productivity trends.</p>
+    </div>
+    
+    <div class="manual-section">
+      <div class="manual-section-header">
+        <span class="manual-icon">🎯</span>
+        <h4>Daily Goals</h4>
+      </div>
+      <p>Set a daily focus goal at the bottom of the right panel. This helps you stay motivated! You'll see a progress bar showing how close you are to your goal.</p>
+    </div>
+    
+    <div class="manual-section">
+      <div class="manual-section-header">
+        <span class="manual-icon">🏆</span>
+        <h4>Badges & Achievements</h4>
+      </div>
+      <p>Earn badges as you use the app! Click the <strong>🏆</strong> button in the top bar to see your badges. Unlock achievements like "First Focus", "Streak Master", and more!</p>
+    </div>
+    
+    <div class="manual-section">
+      <div class="manual-section-header">
+        <span class="manual-icon">⚙️</span>
+        <h4>Settings</h4>
+      </div>
+      <p>Click the <strong>⚙️</strong> button to adjust sound settings and other preferences.</p>
+    </div>
+    
+    <div class="manual-tips">
+      <h4>💡 Quick Tips</h4>
+      <ul class="manual-list">
+        <li>Press <kbd>Space</kbd> to start or pause the timer</li>
+        <li>Press <kbd>S</kbd> to skip the current task</li>
+        <li>Try to focus for at least 15 minutes at a time</li>
+        <li>Take notes after each session to remember what worked</li>
+      </ul>
+    </div>
+  </div>
+  <div class="manual-footer">
+    <button class="btn secondary" id="manualCloseBtnBottom">Close</button>
+  </div>
+</div>
+
+<!-- Clear Badges Confirmation Modal -->
+<div aria-modal="true" class="modal hidden" id="clearBadgesModal" role="dialog">
+  <h3>Clear earned badges?</h3>
+  <div class="muted">This will reset all earned badges. This cannot be undone.</div>
+  <div class="row end gap mt12">
+    <button class="btn secondary" id="clearBadgesCancelBtn">Cancel</button>
+    <button class="btn primary" id="clearBadgesConfirmBtn">Clear</button>
+  </div>
+</div>
+
+<!-- Reset Everything Confirmation Modal -->
+<div aria-modal="true" class="modal hidden" id="resetModal" role="dialog">
+  <h3>Reset everything?</h3>
+  <div class="muted">This will clear all tasks, blocks, badges, feedback, and patterns. This cannot be undone.</div>
+  <div class="row end gap mt12">
+    <button class="btn secondary" id="resetCancelBtn">Cancel</button>
+    <button class="btn primary destructive" id="resetConfirmBtn">Reset</button>
+  </div>
 </div>
 
 <!-- Badge Unlocked Toast -->
@@ -459,6 +552,16 @@
 <button class="btn primary" id="feedbackCloseBtn">Close</button>
 </div>
 </div>
+<!-- Clear Insights Confirmation Modal -->
+<div aria-modal="true" class="modal hidden" id="clearInsightsModal" role="dialog">
+  <h3 id="clearInsightsModalTitle">Clear this data?</h3>
+  <div class="muted" id="clearInsightsModalMessage">This will permanently clear the data shown in this panel.</div>
+  <div class="row end gap mt12">
+    <button class="btn secondary" id="clearInsightsCancelBtn">Cancel</button>
+    <button class="btn primary" id="clearInsightsConfirmBtn">Clear</button>
+  </div>
+</div>
+
 <!-- Shortcuts Modal -->
 <div aria-modal="true" class="modal hidden" id="shortcutsModal" role="dialog">
   <h3>⌨️ Keyboard Shortcuts</h3>
@@ -477,40 +580,32 @@
 
 <!-- Settings Modal -->
 <div aria-modal="true" class="modal hidden" id="settingsModal" role="dialog">
-  <h3>⚙️ Timer Settings</h3>
-  <div class="settings-form">
-    <div class="setting-row">
-      <label for="settingSessionsShort">Sessions before short break</label>
-      <div class="setting-input">
-        <input type="number" id="settingSessionsShort" min="1" max="10" value="1">
-        <span></span>
+  <h3>⚙️ Settings</h3>
+  <div class="settings-form scrollable">
+    <!-- Sound Section -->
+    <div class="settings-section">
+      <div class="settings-section-title">🔔 Sound</div>
+      <div class="setting-row">
+        <label for="settingSoundToggle">Enable sound effects</label>
+        <div class="setting-input">
+          <label class="toggle-switch">
+            <input type="checkbox" id="settingSoundToggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
       </div>
     </div>
-    <div class="setting-row">
-      <label for="settingShortBreak">Short Break</label>
-      <div class="setting-input">
-        <input type="number" id="settingShortBreak" min="1" max="30" value="5">
-        <span>min</span>
-      </div>
-    </div>
-    <div class="setting-row">
-      <label for="settingLongBreak">Long Break</label>
-      <div class="setting-input">
-        <input type="number" id="settingLongBreak" min="1" max="60" value="15">
-        <span>min</span>
-      </div>
-    </div>
-    <div class="setting-row">
-      <label for="settingSessions">Sessions before long break</label>
-      <div class="setting-input">
-        <input type="number" id="settingSessions" min="1" max="10" value="4">
-        <span></span>
-      </div>
-    </div>
-    <div class="setting-row">
-      <label for="settingAutoBreak">Auto-start breaks</label>
-      <div class="setting-toggle">
-        <input type="checkbox" id="settingAutoBreak" checked>
+
+
+    <!-- Keyboard Shortcuts Section -->
+    <div class="settings-section">
+      <div class="settings-section-title">⌨️ Keyboard Shortcuts</div>
+      <div class="shortcuts-list">
+        <div class="shortcut-row"><kbd>Space</kbd><span>Start / Pause timer</span></div>
+        <div class="shortcut-row"><kbd>S</kbd><span>Skip current block</span></div>
+        <div class="shortcut-row"><kbd>N</kbd><span>New task</span></div>
+        <div class="shortcut-row"><kbd>Esc</kbd><span>Close modals</span></div>
+        <div class="shortcut-row"><kbd>?</kbd><span>Show shortcuts help</span></div>
       </div>
     </div>
   </div>
