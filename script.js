@@ -2,7 +2,7 @@
 // === Firebase Authentication ===
 // Firebase Configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAe9H28hJZJ_QMOXYWrJ3r2Mj5imAI52rk",
+  apiKey: "replace-token",
   authDomain: "focusapp-ebe2b.firebaseapp.com",
   projectId: "focusapp-ebe2b",
   storageBucket: "focusapp-ebe2b.firebasestorage.app",
